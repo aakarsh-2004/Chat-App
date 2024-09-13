@@ -21,7 +21,7 @@ server.listen(8080, () => {
 
 const wsServer = new WebSocketServer({
     httpServer: server,
-    autoAcceptConnections: true
+    autoAcceptConnections: false
 })
 
 function originIsAllowed(origin: string) {
@@ -30,6 +30,8 @@ function originIsAllowed(origin: string) {
 }
 
 wsServer.on('request', (request) => {
+    console.log(`Connection request from ${request.origin}`);
+    
     if(!originIsAllowed(request.origin)) {
         // Make sure we only accept requests from an allowed origin
         request.reject();
@@ -37,7 +39,7 @@ wsServer.on('request', (request) => {
         return;
     }
 
-    const connection = request.accept('echo-protocol', request.origin);
+    const connection = request.accept(null, request.origin);
     console.log(`${new Date()} Connection accepted!`);
     
     connection.on('message', (message) => {
@@ -54,13 +56,12 @@ wsServer.on('request', (request) => {
         }
     });
 
-    connection.on('close', (reasonCode, description) => {
-        console.log(`${new Date()} Peer ${connection.remoteAddress} disconnected!`);
-    })
 })
 
 
 function messageHandler(ws: connection, message: IncomingMessageType) {
+    console.log(`Incoming message : ${JSON.stringify(message)}`);
+
     if(message.type == SupportedMessage.JoinRoom) {
         const payload = message.payload;
         userManager.addUser(payload.name, payload.userId, payload.roomId, ws);
