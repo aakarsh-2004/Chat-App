@@ -12,7 +12,6 @@ export class InMemoryStore implements Store {
     
     constructor() {
         this.store = new Map<string, Room>()
-
     }
 
     initRoom(roomId: string) {

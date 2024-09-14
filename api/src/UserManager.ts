@@ -19,9 +19,7 @@ export class UserManager {
         this.rooms = new Map<string, Room>()
     }
 
-    addUser(name: string, roomId: string, userId: string, socket: connection) {
-        
-        
+    addUser(name: string, userId: string, roomId: string, socket: connection) {
         
         if(!this.rooms.get(roomId)) {
             this.rooms.set(roomId, {
@@ -36,18 +34,19 @@ export class UserManager {
         })
         
         console.log(`Inside add user, name of the user is => ${name}`);
-        console.log(JSON.stringify(this.rooms));
-        
+        console.log(this.rooms.get(roomId));
+
         socket.on('close', () => {
+            console.log(`Connection closed for user ${name}`);
             this.removeUser(roomId, userId)
         })
     }
 
     removeUser(roomId: string, userId: string) {
-        const users = this.rooms.get(roomId)?.users;
+        const room = this.rooms.get(roomId);
         
-        if(users) {
-            users.filter(({id}) => id !== userId);
+        if(room) {
+            room.users = room.users.filter(({ id }) => id !== userId);
         }
     }
 
