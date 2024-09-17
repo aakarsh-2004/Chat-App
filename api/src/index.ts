@@ -4,6 +4,7 @@ import { IncomingMessageType, SupportedMessage } from "./messages/incomingMessag
 import { OutgoingMessage, SupportedMessage as OutgoingSupportedMessage } from "./messages/outgoingMessages";
 import { UserManager } from "./UserManager";
 import { InMemoryStore } from "./store/inMemoryStore";
+import { Chat } from "./store/Store";
 
 const server = http.createServer((req: any, res: any) => {
     console.log(`${new Date()} : Received request for ${req.url}`);
@@ -46,7 +47,7 @@ wsServer.on('request', (request) => {
         // To do : add rate limiting logic here
         if(message.type === 'utf8') {
             console.log(`Received message ${message.utf8Data}`);
-            connection.sendUTF(message.utf8Data);
+            // connection.sendUTF(message.utf8Data);
 
             try {
                 messageHandler(connection, JSON.parse(message.utf8Data))
@@ -88,7 +89,7 @@ function messageHandler(ws: connection, message: IncomingMessageType) {
                 roomId: payload.roomId,
                 message: payload.message,
                 name: user.name,
-                upvotes: 0
+                upvotes: []
             }
         }
 
@@ -98,16 +99,18 @@ function messageHandler(ws: connection, message: IncomingMessageType) {
         const payload = message.payload;
         const upvotes = store.upvote(payload.userId, payload.roomId, payload.chatId);
         
-
-        const outgoingPayload: OutgoingMessage = {
-            type: OutgoingSupportedMessage.UpdateChat,
-            payload: {
-                chatId: payload.chatId,
-                roomId: payload.roomId,
-                upvotes: upvotes 
+        if(upvotes) {
+            const outgoingPayload: OutgoingMessage = {
+                type: OutgoingSupportedMessage.UpdateChat,
+                payload: {
+                    chatId: payload.chatId,
+                    roomId: payload.roomId,
+                    upvotes: upvotes.upvotes
+                }
             }
+
+            userManager.broadcast(payload.roomId, payload.userId, outgoingPayload);
         }
 
-        userManager.broadcast(payload.roomId, payload.userId, outgoingPayload);
     }
 }

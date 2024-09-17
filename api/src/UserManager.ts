@@ -70,9 +70,6 @@ export class UserManager {
         }
         
         room.users.forEach(({conn, id}) => {
-            if(user.id == id) {
-                return;
-            }
             console.log(`Outgoing message : ${JSON.stringify(message)}`);
             conn.sendUTF(JSON.stringify(message));
         })

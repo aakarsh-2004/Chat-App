@@ -1,0 +1,1 @@
+{"name":"Local: main","url":"c:\\0-100 Cohort\\Projects\\Realtime-Chat-App\\main.cpp","tests":[{"id":1726496221793,"input":"4\n8 5\n1 2\n4 4\n3 9\n","output":"3 1\n1 0\n0 0\n6 3\n"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\0-100 Cohort\\Projects\\Realtime-Chat-App\\main.cpp","group":"local","local":true}
